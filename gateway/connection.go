@@ -58,8 +58,8 @@ func (c *ConnIDGenerater) getMilliSeconds() int64 {
 
 // socketFD 获取 TCP 连接的底层文件描述符
 // 通过 syscall.Conn 接口安全地获取文件描述符
-func socketFD(conn *net.TCPConn) int {
-	syscallConn, err := conn.SyscallConn()
+func (c *NIOConnection) socketFD() int {
+	syscallConn, err := c.conn.SyscallConn()
 	if err != nil {
 		panic(err)
 	}
@@ -84,7 +84,7 @@ func NewConnection(conn *net.TCPConn) *NIOConnection {
 	}
 	return &NIOConnection{
 		id:   id,
-		fd:   socketFD(conn),
+		fd:   (&NIOConnection{conn: conn}).socketFD(),
 		conn: conn,
 	}
 }
